@@ -36,3 +36,46 @@ class AdapterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TelemetryTests(unittest.TestCase):
+    def test_human_helpers(self):
+        self.assertEqual(zte.human_bytes("1073741824"), "1.0 GiB")
+        self.assertEqual(zte.human_duration("3661"), "1h 01m 01s")
+        self.assertEqual(zte.human_rate("2048"), "2.0 KiB/s")
+
+    def test_support_bundle_contains_only_safe_metadata(self):
+        class Dummy(zte.ZTECPE):
+            def __init__(self):
+                pass
+
+            def device_info(self):
+                return {
+                    "model": "MC_TEST",
+                    "hardware_version": "HW1",
+                    "firmware_version": "FW1",
+                    "web_version": "WEB1",
+                    "api_adapter": "legacy-goform-ld",
+                }
+
+            def capabilities(self):
+                return {
+                    "radio.lte": {
+                        "state": "available",
+                        "fields_present": ["lte_rsrp"],
+                        "fields_nonempty": ["lte_rsrp"],
+                    }
+                }
+
+        bundle = Dummy().support_bundle()
+        payload_text = __import__("json").dumps({"app": bundle["app"], "device": bundle["device"], "capabilities": bundle["capabilities"]}).lower()
+        self.assertFalse(bundle["privacy"]["contains_password"])
+        self.assertFalse(bundle["privacy"]["contains_cookies"])
+        self.assertFalse(bundle["privacy"]["contains_ip_addresses"])
+        self.assertFalse(bundle["privacy"]["contains_mac_addresses"])
+        self.assertFalse(bundle["privacy"]["contains_cell_ids"])
+        self.assertNotIn("password", payload_text)
+        self.assertNotIn("cookie", payload_text)
+        self.assertNotIn("cell_id", payload_text)
+        self.assertNotIn("wan_ipaddr", payload_text)
+        self.assertNotIn("aa:bb:cc", payload_text)

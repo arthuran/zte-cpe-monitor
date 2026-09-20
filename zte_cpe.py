@@ -8,6 +8,7 @@ import http.cookiejar
 import html
 import json
 import os
+import pathlib
 import shutil
 import signal
 import subprocess
@@ -20,7 +21,7 @@ import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 BASE_URL = "http://192.168.0.1"
 APP_NAME = "ZTE CPE Monitor"
 COMMAND_NAME = "zte-cpe"
@@ -41,6 +42,31 @@ FIELDS = [
     "nr5g_pci", "wan_lte_ca", "lte_multi_ca_scell_info",
     "network_type", "signalbar",
 ]
+
+CAPABILITY_GROUPS = {
+    "radio.lte": ["wan_active_channel", "wan_active_band", "lte_rsrp", "lte_rsrq", "lte_snr", "lte_pci"],
+    "radio.nr5g": ["nr5g_action_channel", "nr5g_action_band", "Z5g_rsrp", "Z5g_SINR", "nr5g_pci"],
+    "radio.ca": ["wan_lte_ca", "lte_multi_ca_scell_info"],
+    "radio.ca_detail": [
+        "lte_ca_pcell_arfcn", "lte_ca_pcell_band", "lte_ca_pcell_bandwidth",
+        "lte_ca_scell_band", "lte_ca_scell_bandwidth", "lte_ca_scell_arfcn", "lte_ca_scell_info",
+    ],
+    "device.identity": ["model_name", "hardware_version", "wa_inner_version", "web_version"],
+    "network.mode": ["network_type", "signalbar"],
+    "network.connection": ["wan_connect_status", "ppp_status", "realtime_time"],
+    "traffic.realtime": ["realtime_tx_bytes", "realtime_rx_bytes", "realtime_tx_thrpt", "realtime_rx_thrpt"],
+    "traffic.monthly": ["monthly_tx_bytes", "monthly_rx_bytes", "monthly_time"],
+}
+
+TELEMETRY_FIELDS = [
+    "wan_connect_status", "ppp_status", "realtime_time",
+    "realtime_tx_bytes", "realtime_rx_bytes", "realtime_tx_thrpt", "realtime_rx_thrpt",
+    "monthly_tx_bytes", "monthly_rx_bytes", "monthly_time",
+]
+
+SUPPORT_BUNDLE_SAFE_DEVICE_FIELDS = {
+    "model", "hardware_version", "firmware_version", "web_version", "api_adapter"
+}
 
 LANGUAGES = ("en", "th")
 
@@ -416,6 +442,56 @@ class ZTECPE:
             "api_adapter": self.adapter.name,
         }
 
+    def capabilities(self):
+        if not self.logged_in:
+            self.login()
+        all_fields = []
+        for fields in CAPABILITY_GROUPS.values():
+            for field in fields:
+                if field not in all_fields:
+                    all_fields.append(field)
+        raw = self.adapter.get(self, all_fields)
+        groups = {}
+        for name, fields in CAPABILITY_GROUPS.items():
+            present = [field for field in fields if field in raw]
+            nonempty = [field for field in fields if raw.get(field) not in (None, "")]
+            if nonempty:
+                state = "available"
+            elif present:
+                state = "present-empty"
+            else:
+                state = "unavailable"
+            groups[name] = {
+                "state": state,
+                "fields_present": present,
+                "fields_nonempty": nonempty,
+            }
+        return groups
+
+    def telemetry(self):
+        if not self.logged_in:
+            self.login()
+        return self.adapter.get(self, TELEMETRY_FIELDS)
+
+    def support_bundle(self):
+        info = self.device_info()
+        capabilities = self.capabilities()
+        return {
+            "schema_version": 1,
+            "app": {"name": APP_NAME, "version": VERSION},
+            "device": {key: info.get(key, "") for key in sorted(SUPPORT_BUNDLE_SAFE_DEVICE_FIELDS)},
+            "capabilities": capabilities,
+            "privacy": {
+                "contains_password": False,
+                "contains_cookies": False,
+                "contains_ip_addresses": False,
+                "contains_mac_addresses": False,
+                "contains_cell_ids": False,
+                "contains_radio_values": False,
+                "contains_ssid_or_hostname": False,
+            },
+        }
+
     def raw_status(self):
         with self.lock:
             if not self.logged_in:
@@ -431,6 +507,43 @@ class ZTECPE:
             self.login()
             raw = self.adapter.get(self, FIELDS)
         return raw
+
+
+def human_bytes(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return "—"
+    units = ["B", "KiB", "MiB", "GiB", "TiB"]
+    for unit in units:
+        if abs(number) < 1024 or unit == units[-1]:
+            return f"{number:.1f} {unit}" if unit != "B" else f"{int(number)} B"
+        number /= 1024
+    return "—"
+
+
+def human_duration(value):
+    try:
+        seconds = int(float(value))
+    except (TypeError, ValueError):
+        return "—"
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, seconds = divmod(rem, 60)
+    if days:
+        return f"{days}d {hours:02d}h {minutes:02d}m"
+    if hours:
+        return f"{hours}h {minutes:02d}m {seconds:02d}s"
+    return f"{minutes}m {seconds:02d}s"
+
+
+def human_rate(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return "—"
+    # ZTE legacy fields are reported in bytes per second on tested firmware.
+    return human_bytes(number) + "/s"
 
 
 def hex_to_dec(value):
@@ -825,6 +938,10 @@ def parser():
     sub.add_parser("password", help="change the password stored in the secure credential store")
     sub.add_parser("config", help="show current config without revealing the password")
     sub.add_parser("detect", help="detect model and API adapter")
+    sub.add_parser("capabilities", help="probe read-only API capabilities")
+    sub.add_parser("telemetry", help="show read-only connection and traffic telemetry")
+    sb = sub.add_parser("support-bundle", help="write a privacy-safe diagnostic bundle")
+    sb.add_argument("--output", help="output JSON path (default: ./zte-cpe-support.json)")
     sub.add_parser("forget-password", help="remove the ZTE CPE password from the secure credential store")
     return p
 
@@ -858,6 +975,52 @@ def main():
         print(f"Firmware: {info['firmware_version'] or '—'}")
         print(f"Web UI: {info['web_version'] or '—'}")
         print(f"API adapter: {info['api_adapter']}")
+        return 0
+
+    if args.command == "capabilities":
+        admin_url, password, client = load_runtime_credentials()
+        info = client.device_info()
+        print(f"Model: {info['model']}")
+        print(f"API adapter: {info['api_adapter']}")
+        print("\nCapabilities")
+        print("─" * 46)
+        for name, cap in client.capabilities().items():
+            marker = "✓" if cap["state"] == "available" else ("○" if cap["state"] == "present-empty" else "—")
+            print(f"{marker} {name:<22} {cap['state']}")
+        return 0
+
+    if args.command == "telemetry":
+        admin_url, password, client = load_runtime_credentials()
+        raw = client.telemetry()
+        print("Connection")
+        print("─" * 46)
+        print(f"WAN status        {raw.get('wan_connect_status') or '—'}")
+        print(f"PPP status        {raw.get('ppp_status') or '—'}")
+        print(f"Session uptime    {human_duration(raw.get('realtime_time'))}")
+        print("\nRealtime traffic")
+        print("─" * 46)
+        print(f"TX total          {human_bytes(raw.get('realtime_tx_bytes'))}")
+        print(f"RX total          {human_bytes(raw.get('realtime_rx_bytes'))}")
+        print(f"TX rate           {human_rate(raw.get('realtime_tx_thrpt'))}")
+        print(f"RX rate           {human_rate(raw.get('realtime_rx_thrpt'))}")
+        print("\nMonthly traffic")
+        print("─" * 46)
+        print(f"TX                {human_bytes(raw.get('monthly_tx_bytes'))}")
+        print(f"RX                {human_bytes(raw.get('monthly_rx_bytes'))}")
+        print(f"Connected time    {human_duration(raw.get('monthly_time'))}")
+        return 0
+
+    if args.command == "support-bundle":
+        admin_url, password, client = load_runtime_credentials()
+        bundle = client.support_bundle()
+        output = pathlib.Path(args.output or "zte-cpe-support.json").expanduser()
+        output.write_text(json.dumps(bundle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        try:
+            os.chmod(output, 0o600)
+        except OSError:
+            pass
+        print(f"Wrote privacy-safe support bundle: {output}")
+        print("No password, cookies, IP/MAC addresses, cell IDs, SSIDs, hostnames, or raw radio values are included.")
         return 0
 
     if args.command == "config":

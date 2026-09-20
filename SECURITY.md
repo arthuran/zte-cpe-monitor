@@ -25,6 +25,10 @@ The project intentionally follows these defaults:
 
 Many ZTE CPE firmwares expose their local administration interface over HTTP rather than HTTPS. The challenge-response login avoids sending the plaintext password as an HTTP form value, but HTTP still does not provide transport confidentiality or server authentication. Use the tool only on a trusted local network or through a trusted tunnel.
 
+## Support bundles
+
+The built-in `support-bundle` command is designed for public compatibility reports. It exports capability structure and non-secret device family/version metadata, not raw router status values. Review any diagnostic file before sharing it if your environment has additional privacy requirements.
+
 ## Reporting a vulnerability
 
 Please do not publish credentials, cookies, device identifiers, private IP topology, or exploit details in a public issue.

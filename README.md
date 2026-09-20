@@ -58,6 +58,9 @@ zte-cpe -e               # status plus metric explanations
 zte-cpe dashboard        # temporary local dashboard
 zte-cpe --json           # machine-readable output
 zte-cpe detect           # model, firmware and API adapter
+zte-cpe capabilities     # read-only capability probe
+zte-cpe telemetry        # connection + traffic counters
+zte-cpe support-bundle   # privacy-safe diagnostic JSON
 zte-cpe config           # current non-secret config
 zte-cpe url              # change admin URL
 zte-cpe password         # change stored password
@@ -67,6 +70,18 @@ zte-cpe --version
 ```
 
 The dashboard runs only while the command is active. Press `Ctrl+C` to stop it.
+
+## Diagnostics and capability discovery
+
+`zte-cpe capabilities` probes only a curated set of read-only fields and reports whether each capability is available, present-but-empty, or unavailable. This helps distinguish an inactive feature such as Carrier Aggregation from a firmware that does not expose the field at all.
+
+`zte-cpe telemetry` shows connection state, session duration, realtime TX/RX counters and rates, and monthly usage when the firmware exposes those fields. It intentionally does not request WAN IP, APN, SSID, hostname, MAC address, IMEI, or IMSI.
+
+`zte-cpe support-bundle` writes a diagnostic JSON file for compatibility reports. The bundle contains device family/version metadata, adapter identity, field names and capability states, but no passwords, cookies, IP/MAC addresses, cell IDs, SSIDs, hostnames, or raw radio values.
+
+```sh
+zte-cpe support-bundle --output ~/Desktop/zte-cpe-support.json
+```
 
 ## Signal indicators
 
