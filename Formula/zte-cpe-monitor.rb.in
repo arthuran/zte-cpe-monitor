@@ -1,0 +1,20 @@
+class ZteCpeMonitor < Formula
+  desc "On-demand CLI and temporary dashboard for ZTE CPE radio status"
+  homepage "https://github.com/__GITHUB_OWNER__/zte-cpe-monitor"
+  url "https://github.com/__GITHUB_OWNER__/zte-cpe-monitor/archive/refs/tags/v__VERSION__.tar.gz"
+  sha256 "__SHA256__"
+  license "MIT"
+
+  depends_on "python@3.14"
+
+  def install
+    inreplace "tools/zte_cpe.py",
+              "#!/usr/bin/env python3",
+              "#!#{Formula["python@3.14"].opt_bin}/python3.14"
+    bin.install "tools/zte_cpe.py" => "zte-cpe"
+  end
+
+  test do
+    assert_match "usage: zte-cpe", shell_output("#{bin}/zte-cpe --help")
+  end
+end

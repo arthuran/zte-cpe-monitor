@@ -1,0 +1,24 @@
+$ zte-cpe
+ZTE CPE Monitor
+Updated  2026-09-20 16:20:00
+──────────────────────────────────────────────────────────
+Mode             5G NSA / ENDC
+Signal bars      5 /5
+
+LTE
+LTE Band         B3
+LTE EARFCN       1275
+LTE RSRP         -72 dBm  ● Excellent
+LTE RSRQ         -11 dB  ● Good
+LTE SINR         22.2 dB  ● Excellent
+LTE RSSI         -43 dBm
+LTE PCI          123
+LTE Cell ID      1715004
+LTE CA           No
+
+5G NR
+5G Band          n41
+5G NR-ARFCN      518000
+5G RSRP          -67 dBm  ● Excellent
+5G SINR          26.5 dB  ● Excellent
+5G PCI           500

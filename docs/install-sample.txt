@@ -1,0 +1,10 @@
+$ brew install arthuran/tap/zte-cpe-monitor
+$ zte-cpe setup
+ZTE CPE admin URL [http://192.168.0.1]:
+ZTE CPE password:
+✓ Saved Admin URL: http://192.168.0.1
+✓ Verified and saved password in the secure credential store
+
+$ zte-cpe dashboard
+ZTE CPE dashboard: http://127.0.0.1:8765/
+Refresh every 10s · Press Ctrl+C to stop
