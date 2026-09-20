@@ -21,7 +21,7 @@ import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 BASE_URL = "http://192.168.0.1"
 APP_NAME = "ZTE CPE Monitor"
 COMMAND_NAME = "zte-cpe"
@@ -56,6 +56,10 @@ CAPABILITY_GROUPS = {
     "network.connection": ["wan_connect_status", "ppp_status", "realtime_time"],
     "traffic.realtime": ["realtime_tx_bytes", "realtime_rx_bytes", "realtime_tx_thrpt", "realtime_rx_thrpt"],
     "traffic.monthly": ["monthly_tx_bytes", "monthly_rx_bytes", "monthly_time"],
+    "clients.summary": [
+        "wifi_access_sta_num", "wifi_chip1_ssid1_access_sta_num", "wifi_chip2_ssid1_access_sta_num",
+        "wifi_chip1_ssid2_access_sta_num", "wifi_chip2_ssid2_access_sta_num",
+    ],
 }
 
 TELEMETRY_FIELDS = [

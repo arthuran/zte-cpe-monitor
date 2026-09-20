@@ -73,7 +73,7 @@ The dashboard runs only while the command is active. Press `Ctrl+C` to stop it.
 
 ## Diagnostics and capability discovery
 
-`zte-cpe capabilities` probes only a curated set of read-only fields and reports whether each capability is available, present-but-empty, or unavailable. This helps distinguish an inactive feature such as Carrier Aggregation from a firmware that does not expose the field at all.
+`zte-cpe capabilities` probes only a curated set of read-only fields and reports whether each capability is available, present-but-empty, or unavailable. It also probes client-summary counters when the firmware exposes them, without collecting client MAC/IP/hostname data. This helps distinguish an inactive feature such as Carrier Aggregation from a firmware that does not expose the field at all.
 
 `zte-cpe telemetry` shows connection state, session duration, realtime TX/RX counters and rates, and monthly usage when the firmware exposes those fields. It intentionally does not request WAN IP, APN, SSID, hostname, MAC address, IMEI, or IMSI.
 
