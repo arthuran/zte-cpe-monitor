@@ -117,17 +117,86 @@ RATING_TEXTS = {
     "en": {
         "excellent": "Excellent",
         "good": "Good",
+        "moderate": "Moderate",
         "fair": "Fair",
         "poor": "Poor",
+        "very_poor": "Very poor",
         "unknown": "No data",
     },
     "th": {
         "excellent": "ดีมาก",
         "good": "ดี",
+        "moderate": "ปานกลาง",
         "fair": "พอใช้",
         "poor": "แย่",
+        "very_poor": "แย่มาก",
         "unknown": "ไม่มีข้อมูล",
     },
+}
+
+SIGNAL_REFERENCE = {
+    "rsrp": [
+        {"rating": "excellent", "range": "≥ -80 dBm"},
+        {"rating": "good", "range": "-90 to < -80 dBm"},
+        {"rating": "fair", "range": "-100 to < -90 dBm"},
+        {"rating": "poor", "range": "< -100 dBm"},
+    ],
+    "sinr": [
+        {"rating": "excellent", "range": "> 20 dB"},
+        {"rating": "good", "range": "13 to 20 dB"},
+        {"rating": "moderate", "range": "5 to < 13 dB"},
+        {"rating": "poor", "range": "0 to < 5 dB"},
+        {"rating": "very_poor", "range": "< 0 dB"},
+    ],
+}
+
+# Common sub-6 GHz bands documented across MC7010 variants. Exact supported bands
+# vary by hardware revision and firmware. EARFCN parameters follow 3GPP TS 36.101.
+LTE_BAND_REFERENCE = [
+    {"band": "B1", "name": "2100 MHz", "duplex": "FDD", "uplink": "1920–1980", "downlink": "2110–2170", "earfcn": [0, 599], "fdl_low": 2110.0, "n_offs_dl": 0},
+    {"band": "B3", "name": "1800 MHz", "duplex": "FDD", "uplink": "1710–1785", "downlink": "1805–1880", "earfcn": [1200, 1949], "fdl_low": 1805.0, "n_offs_dl": 1200},
+    {"band": "B5", "name": "850 MHz", "duplex": "FDD", "uplink": "824–849", "downlink": "869–894", "earfcn": [2400, 2649], "fdl_low": 869.0, "n_offs_dl": 2400},
+    {"band": "B7", "name": "2600 MHz", "duplex": "FDD", "uplink": "2500–2570", "downlink": "2620–2690", "earfcn": [2750, 3449], "fdl_low": 2620.0, "n_offs_dl": 2750},
+    {"band": "B8", "name": "900 MHz", "duplex": "FDD", "uplink": "880–915", "downlink": "925–960", "earfcn": [3450, 3799], "fdl_low": 925.0, "n_offs_dl": 3450},
+    {"band": "B20", "name": "800 MHz", "duplex": "FDD", "uplink": "832–862", "downlink": "791–821", "earfcn": [6150, 6449], "fdl_low": 791.0, "n_offs_dl": 6150},
+    {"band": "B28", "name": "700 MHz", "duplex": "FDD", "uplink": "703–748", "downlink": "758–803", "earfcn": [9210, 9659], "fdl_low": 758.0, "n_offs_dl": 9210},
+    {"band": "B34", "name": "2000 MHz", "duplex": "TDD", "uplink": "2010–2025", "downlink": "2010–2025", "earfcn": [36200, 36349], "fdl_low": 2010.0, "n_offs_dl": 36200},
+    {"band": "B38", "name": "2600 MHz", "duplex": "TDD", "uplink": "2570–2620", "downlink": "2570–2620", "earfcn": [37750, 38249], "fdl_low": 2570.0, "n_offs_dl": 37750},
+    {"band": "B39", "name": "1900 MHz", "duplex": "TDD", "uplink": "1880–1920", "downlink": "1880–1920", "earfcn": [38250, 38649], "fdl_low": 1880.0, "n_offs_dl": 38250},
+    {"band": "B40", "name": "2300 MHz", "duplex": "TDD", "uplink": "2300–2400", "downlink": "2300–2400", "earfcn": [38650, 39649], "fdl_low": 2300.0, "n_offs_dl": 38650},
+    {"band": "B41", "name": "2500 MHz", "duplex": "TDD", "uplink": "2496–2690", "downlink": "2496–2690", "earfcn": [39650, 41589], "fdl_low": 2496.0, "n_offs_dl": 39650},
+]
+
+NR_BAND_REFERENCE = [
+    {"band": "n1", "name": "2100 MHz", "duplex": "FDD", "uplink": "1920–1980", "downlink": "2110–2170"},
+    {"band": "n3", "name": "1800 MHz", "duplex": "FDD", "uplink": "1710–1785", "downlink": "1805–1880"},
+    {"band": "n7", "name": "2600 MHz", "duplex": "FDD", "uplink": "2500–2570", "downlink": "2620–2690"},
+    {"band": "n8", "name": "900 MHz", "duplex": "FDD", "uplink": "880–915", "downlink": "925–960"},
+    {"band": "n20", "name": "800 MHz", "duplex": "FDD", "uplink": "832–862", "downlink": "791–821"},
+    {"band": "n28", "name": "700 MHz", "duplex": "FDD", "uplink": "703–748", "downlink": "758–803"},
+    {"band": "n38", "name": "2600 MHz", "duplex": "TDD", "uplink": "2570–2620", "downlink": "2570–2620"},
+    {"band": "n40", "name": "2300 MHz", "duplex": "TDD", "uplink": "2300–2400", "downlink": "2300–2400"},
+    {"band": "n41", "name": "2500 MHz", "duplex": "TDD", "uplink": "2496–2690", "downlink": "2496–2690"},
+    {"band": "n77", "name": "3700 MHz", "duplex": "TDD", "uplink": "3300–4200", "downlink": "3300–4200"},
+    {"band": "n78", "name": "3500 MHz", "duplex": "TDD", "uplink": "3300–3800", "downlink": "3300–3800"},
+    {"band": "n79", "name": "4700 MHz", "duplex": "TDD", "uplink": "4400–5000", "downlink": "4400–5000"},
+]
+
+REFERENCE_DATA = {
+    "signal": SIGNAL_REFERENCE,
+    "lte_bands": [{k: v for k, v in row.items() if k not in {"fdl_low", "n_offs_dl"}} for row in LTE_BAND_REFERENCE],
+    "nr_bands": NR_BAND_REFERENCE,
+}
+
+REFERENCE_KEYS = {
+    "LTE RSRP": "rsrp",
+    "5G RSRP": "rsrp",
+    "LTE SINR": "sinr",
+    "5G SINR": "sinr",
+    "LTE Band": "lte_band",
+    "LTE EARFCN": "lte_channel",
+    "5G Band": "nr_band",
+    "5G NR-ARFCN": "nr_channel",
 }
 
 
@@ -588,13 +657,15 @@ def rating(metric, value):
             return "fair"
         return "poor"
     if metric in ("lte_sinr", "nr_sinr"):
-        if x >= 20:
+        if x > 20:
             return "excellent"
         if x >= 13:
             return "good"
+        if x >= 5:
+            return "moderate"
         if x >= 0:
-            return "fair"
-        return "poor"
+            return "poor"
+        return "very_poor"
     if metric == "lte_rsrq":
         if x >= -10:
             return "excellent"
@@ -604,6 +675,46 @@ def rating(metric, value):
             return "fair"
         return "poor"
     return "unknown"
+
+
+def lte_earfcn_info(value):
+    try:
+        channel = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    for row in LTE_BAND_REFERENCE:
+        first, last = row["earfcn"]
+        if first <= channel <= last:
+            frequency = row["fdl_low"] + 0.1 * (channel - row["n_offs_dl"])
+            return {
+                "band": row["band"],
+                "frequency_mhz": round(frequency, 3),
+                "direction": "downlink",
+            }
+    return None
+
+
+def nr_arfcn_frequency_mhz(value):
+    try:
+        channel = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
+    if 0 <= channel <= 599999:
+        return round(channel * 0.005, 3)
+    if 600000 <= channel <= 2016666:
+        return round(3000.0 + (channel - 600000) * 0.015, 3)
+    if 2016667 <= channel <= 3279165:
+        return round(24250.08 + (channel - 2016667) * 0.06, 3)
+    return None
+
+
+def band_reference(kind, band):
+    rows = LTE_BAND_REFERENCE if kind == "lte" else NR_BAND_REFERENCE
+    normalized = str(band or "").strip().lower()
+    for row in rows:
+        if row["band"].lower() == normalized:
+            return {k: v for k, v in row.items() if k not in {"fdl_low", "n_offs_dl"}}
+    return None
 
 
 def fmt(value, unit=""):
@@ -618,11 +729,26 @@ def normalize(raw, language="en"):
     mode = "5G NSA / ENDC" if mode_raw == "ENDC" else (mode_raw or "—")
     ca_raw = raw.get("wan_lte_ca") or raw.get("lte_multi_ca_scell_info")
     ca = "No" if not ca_raw else str(ca_raw)
+    lte_band = clean_band(raw.get("wan_active_band"), "LTE")
+    nr_band = clean_band(raw.get("nr5g_action_band"), "NR")
+    lte_channel_info = lte_earfcn_info(raw.get("wan_active_channel"))
+    nr_frequency = nr_arfcn_frequency_mhz(raw.get("nr5g_action_channel"))
+
+    details = {
+        "LTE Band": band_reference("lte", lte_band),
+        "LTE EARFCN": lte_channel_info,
+        "5G Band": band_reference("nr", nr_band),
+        "5G NR-ARFCN": {
+            "band": nr_band if nr_band != "—" else None,
+            "frequency_mhz": nr_frequency,
+            "direction": "reference",
+        } if nr_frequency is not None else None,
+    }
 
     rows = [
         ("Mode", mode, None),
         ("Signal bars", fmt(raw.get("signalbar"), "/5"), None),
-        ("LTE Band", clean_band(raw.get("wan_active_band"), "LTE"), None),
+        ("LTE Band", lte_band, None),
         ("LTE EARFCN", fmt(raw.get("wan_active_channel")), None),
         ("LTE RSRP", fmt(raw.get("lte_rsrp"), "dBm"), rating("lte_rsrp", raw.get("lte_rsrp"))),
         ("LTE RSRQ", fmt(raw.get("lte_rsrq"), "dB"), rating("lte_rsrq", raw.get("lte_rsrq"))),
@@ -631,7 +757,7 @@ def normalize(raw, language="en"):
         ("LTE PCI", hex_to_dec(raw.get("lte_pci")), None),
         ("LTE Cell ID", hex_to_dec(raw.get("cell_id")), None),
         ("LTE CA", ca, None),
-        ("5G Band", clean_band(raw.get("nr5g_action_band"), "NR"), None),
+        ("5G Band", nr_band, None),
         ("5G NR-ARFCN", fmt(raw.get("nr5g_action_channel")), None),
         ("5G RSRP", fmt(raw.get("Z5g_rsrp"), "dBm"), rating("nr_rsrp", raw.get("Z5g_rsrp"))),
         ("5G SINR", fmt(raw.get("Z5g_SINR"), "dB"), rating("nr_sinr", raw.get("Z5g_SINR"))),
@@ -647,6 +773,8 @@ def normalize(raw, language="en"):
                 "rating": level,
                 "rating_text": RATING_TEXTS[language].get(level, "") if level else "",
                 "explanation": EXPLANATIONS[language].get(name, ""),
+                "reference_key": REFERENCE_KEYS.get(name),
+                "detail": details.get(name),
             }
             for name, value, level in rows
         ],
@@ -706,30 +834,63 @@ body { margin:0; background:#111318; color:#eef1f5; }
 header { display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:20px; }
 h1 { margin:0; font-size:30px; }
 .sub { color:#9da7b3; margin-top:6px; }
-.controls { display:flex; gap:14px; align-items:center; color:#c8d0da; flex-wrap:wrap; }
-.controls select { font:inherit; }
+.controls { display:flex; gap:10px; align-items:center; color:#c8d0da; flex-wrap:wrap; }
+.controls select,.ref-button { font:inherit; }
+.ref-button { border:1px solid #3b4654; background:#202631; color:#e7edf5; border-radius:9px; padding:6px 10px; cursor:pointer; }
+.ref-button:hover,.info-button:hover { background:#2a3341; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
 .card { background:#1a1e25; border:1px solid #2a303a; border-radius:14px; padding:16px; }
 .card h2 { margin:0 0 12px; font-size:15px; color:#aab4c0; }
 .metric { padding:10px 0; border-top:1px solid #282e37; }
 .metric:first-of-type { border-top:0; }
 .line { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.name-wrap { display:flex; align-items:center; gap:6px; min-width:0; }
 .name { color:#bec7d1; }
+.info-button { width:21px; height:21px; border-radius:50%; border:1px solid #3b4654; background:#202631; color:#9fc6ff; cursor:pointer; padding:0; line-height:18px; font-weight:700; }
 .value { font-size:18px; font-weight:650; font-variant-numeric:tabular-nums; }
 .badge { font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; margin-left:7px; }
-.excellent,.good { color:#55dc83; } .badge.excellent,.badge.good { background:#163c25; }
-.fair { color:#ffd166; } .badge.fair { background:#433713; }
-.poor { color:#ff6b6b; } .badge.poor { background:#461d20; }
+.excellent { color:#55dc83; } .badge.excellent,.swatch.excellent { background:#163c25; }
+.good { color:#8ee6a8; } .badge.good,.swatch.good { background:#23452d; }
+.moderate,.fair { color:#ffd166; } .badge.moderate,.badge.fair,.swatch.moderate,.swatch.fair { background:#433713; }
+.poor { color:#ff9f43; } .badge.poor,.swatch.poor { background:#4b3017; }
+.very_poor { color:#ff6b6b; } .badge.very_poor,.swatch.very_poor { background:#461d20; }
 .explanation { display:none; color:#8f9aa7; font-size:13px; line-height:1.45; margin-top:6px; }
 .show-explain .explanation { display:block; }
 #error { display:none; background:#461d20; color:#ffb2b2; border-radius:10px; padding:12px 14px; margin-bottom:14px; }
 footer { margin-top:18px; color:#77818d; font-size:12px; }
+dialog { width:min(880px,calc(100vw - 32px)); max-height:82vh; border:1px solid #384251; border-radius:16px; background:#15191f; color:#eef1f5; padding:0; box-shadow:0 24px 80px #0009; }
+dialog::backdrop { background:#05070a99; backdrop-filter:blur(3px); }
+.dialog-head { position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 18px; background:#15191f; border-bottom:1px solid #2a303a; }
+.dialog-head h2 { margin:0; font-size:19px; }
+.close-button { border:0; background:transparent; color:#b9c3cf; font-size:25px; cursor:pointer; }
+.ref-body { padding:4px 18px 20px; overflow:auto; }
+.ref-section { margin:18px 0 24px; }
+.ref-section h3 { margin:0 0 7px; font-size:17px; }
+.ref-copy { margin:0 0 12px; color:#aeb8c4; line-height:1.55; }
+.current-ref { padding:10px 12px; border:1px solid #35506f; border-radius:10px; background:#182638; margin:10px 0 14px; font-variant-numeric:tabular-nums; }
+.table-wrap { overflow-x:auto; border:1px solid #2b333e; border-radius:10px; }
+.ref-table { width:100%; border-collapse:collapse; min-width:520px; }
+.ref-table th,.ref-table td { text-align:left; padding:9px 10px; border-bottom:1px solid #29313b; font-size:13px; }
+.ref-table th { color:#9facba; font-weight:650; background:#1b2028; }
+.ref-table tr:last-child td { border-bottom:0; }
+.ref-table tr.current td { background:#1b3045; }
+.level-cell { display:flex; align-items:center; gap:8px; }
+.swatch { width:10px; height:10px; border-radius:50%; border:1px solid #ffffff22; }
+.source-note { color:#7f8a97; font-size:12px; line-height:1.45; margin-top:16px; }
+@media (max-width:620px) {
+  .wrap { margin-top:20px; padding-inline:14px; }
+  header { align-items:flex-start; flex-direction:column; }
+  .controls { width:100%; }
+  .line { align-items:flex-start; }
+  .value { font-size:17px; }
+}
 </style>
 </head>
 <body><div class="wrap" id="app">
 <header>
 <div><h1>ZTE CPE Monitor</h1><div class="sub" id="updated"></div></div>
 <div class="controls">
+<button class="ref-button" id="refButton" type="button">Ref</button>
 <label><span id="languageLabel"></span>
 <select id="language"><option value="en">English</option><option value="th">ไทย</option></select>
 </label>
@@ -740,9 +901,15 @@ footer { margin-top:18px; color:#77818d; font-size:12px; }
 <div class="grid" id="grid"></div>
 <footer id="footer"></footer>
 </div>
+<dialog id="refDialog">
+  <div class="dialog-head"><h2 id="refTitle"></h2><button class="close-button" id="closeRef" type="button" aria-label="Close">×</button></div>
+  <div class="ref-body" id="refBody"></div>
+</dialog>
 <script>
 const intervalMs = __INTERVAL_MS__;
+const referenceData = __REFERENCE_DATA__;
 let currentLang = "__LANG__";
+let latestRows = {};
 const i18n = {
   en: {
     loading: "Loading signal data…",
@@ -751,6 +918,29 @@ const i18n = {
     connection: "Connection",
     refresh: "refresh",
     error: "Unable to read signal data",
+    ref: "Ref",
+    refTitle: "Signal & frequency reference",
+    detailsFor: "Details for",
+    current: "Current",
+    rsrpTitle: "RSRP · Signal strength",
+    rsrpCopy: "RSRP measures the received reference-signal power. Values closer to 0 dBm mean a stronger radio signal. It tells you strength, not how clean the channel is.",
+    sinrTitle: "SINR · Signal quality",
+    sinrCopy: "SINR compares the wanted signal with interference and noise. Higher is better. A strong RSRP can still perform poorly when SINR is low.",
+    lteBandsTitle: "LTE band codes",
+    nrBandsTitle: "5G NR band codes",
+    bandCopy: "The band code identifies a standardized frequency range. FDD uses separate uplink/downlink ranges; TDD shares one range in time.",
+    channelCopy: "EARFCN / NR-ARFCN is the channel number. The current channel can be converted to an approximate RF reference frequency.",
+    level: "Level",
+    range: "Range",
+    band: "Band",
+    common: "Common name",
+    duplex: "Duplex",
+    uplink: "Uplink MHz",
+    downlink: "Downlink / TDD MHz",
+    frequency: "frequency",
+    downlinkWord: "downlink",
+    referenceWord: "reference frequency",
+    source: "Reference: 3GPP TS 36.101 for LTE EARFCN and TS 38.104 / 38.101-1 for NR. MC7010 band support varies by hardware revision and firmware.",
     footer: "This dashboard runs only while the zte-cpe command is active. Press Ctrl+C in Terminal to stop it."
   },
   th: {
@@ -760,16 +950,47 @@ const i18n = {
     connection: "การเชื่อมต่อ",
     refresh: "รีเฟรช",
     error: "ไม่สามารถอ่านข้อมูลสัญญาณได้",
+    ref: "Ref",
+    refTitle: "อ้างอิงค่าสัญญาณและความถี่",
+    detailsFor: "รายละเอียด",
+    current: "ค่าปัจจุบัน",
+    rsrpTitle: "RSRP · ความแรงสัญญาณ",
+    rsrpCopy: "RSRP คือกำลังของสัญญาณอ้างอิงที่รับได้ ค่ายิ่งใกล้ 0 dBm ยิ่งแรง ใช้ดูความแรงของสัญญาณ แต่ไม่ได้บอกว่าสัญญาณสะอาดหรือมีคลื่นรบกวนมากแค่ไหน",
+    sinrTitle: "SINR · คุณภาพสัญญาณ",
+    sinrCopy: "SINR เปรียบเทียบสัญญาณที่ต้องการกับสัญญาณรบกวนและ noise ค่ายิ่งสูงยิ่งดี แม้ RSRP จะแรง แต่ถ้า SINR ต่ำ ความเร็วก็อาจไม่ดีได้",
+    lteBandsTitle: "รหัสย่านความถี่ LTE",
+    nrBandsTitle: "รหัสย่านความถี่ 5G NR",
+    bandCopy: "รหัส Band คือชื่อย่อของช่วงความถี่ตามมาตรฐาน FDD แยกความถี่ขาขึ้น/ขาลง ส่วน TDD ใช้ช่วงเดียวกันสลับกันตามเวลา",
+    channelCopy: "EARFCN / NR-ARFCN คือหมายเลขช่องสัญญาณ สามารถนำมาแปลงเป็นความถี่อ้างอิงของช่องที่ใช้อยู่ได้",
+    level: "ระดับ",
+    range: "ช่วงค่า",
+    band: "Band",
+    common: "ชื่อความถี่",
+    duplex: "ระบบ",
+    uplink: "Uplink MHz",
+    downlink: "Downlink / TDD MHz",
+    frequency: "ความถี่",
+    downlinkWord: "ขาลง",
+    referenceWord: "ความถี่อ้างอิง",
+    source: "อ้างอิง: 3GPP TS 36.101 สำหรับ LTE EARFCN และ TS 38.104 / 38.101-1 สำหรับ NR ทั้งนี้ Band ที่ MC7010 รองรับจริงอาจต่างกันตามรุ่นย่อยและ firmware",
     footer: "Dashboard นี้ทำงานเฉพาะตอนที่คำสั่ง zte-cpe กำลังรันอยู่ กด Ctrl+C ใน Terminal เพื่อหยุด"
   }
 };
-const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;","'":"&#39;"}[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function tr(key) { return (i18n[currentLang] || i18n.en)[key] || key; }
+function ratingText(key) {
+  const map = currentLang === "th"
+    ? {excellent:"ดีมาก",good:"ดี",moderate:"ปานกลาง",fair:"พอใช้",poor:"แย่",very_poor:"แย่มาก"}
+    : {excellent:"Excellent",good:"Good",moderate:"Moderate",fair:"Fair",poor:"Poor",very_poor:"Very poor"};
+  return map[key] || key;
+}
 function applyLanguage() {
   document.documentElement.lang = currentLang;
   document.getElementById("language").value = currentLang;
   document.getElementById("languageLabel").textContent = tr("language") + ": ";
   document.getElementById("explainLabel").textContent = tr("explain");
+  document.getElementById("refButton").textContent = tr("ref");
+  document.getElementById("refTitle").textContent = tr("refTitle");
   document.getElementById("footer").textContent = tr("footer");
   document.getElementById("updated").textContent = tr("loading");
 }
@@ -793,6 +1014,70 @@ function groupFor(name) {
   if (name.startsWith("5G ")) return "5G NR";
   return tr("connection");
 }
+function signalTable(metric) {
+  const rows = referenceData.signal[metric] || [];
+  return '<div class="table-wrap"><table class="ref-table"><thead><tr><th>'+esc(tr("level"))+'</th><th>'+esc(tr("range"))+'</th></tr></thead><tbody>' +
+    rows.map(row => '<tr><td><span class="level-cell"><span class="swatch '+esc(row.rating)+'"></span><span class="'+esc(row.rating)+'">'+esc(ratingText(row.rating))+'</span></span></td><td>'+esc(row.range)+'</td></tr>').join("") +
+    '</tbody></table></div>';
+}
+function currentBand(kind) {
+  const row = latestRows[kind === "lte" ? "LTE Band" : "5G Band"];
+  return row && row.value ? String(row.value).toLowerCase() : "";
+}
+function bandTable(kind) {
+  const rows = kind === "lte" ? referenceData.lte_bands : referenceData.nr_bands;
+  const current = currentBand(kind);
+  return '<div class="table-wrap"><table class="ref-table"><thead><tr><th>'+esc(tr("band"))+'</th><th>'+esc(tr("common"))+'</th><th>'+esc(tr("duplex"))+'</th><th>'+esc(tr("uplink"))+'</th><th>'+esc(tr("downlink"))+'</th></tr></thead><tbody>' +
+    rows.map(row => '<tr class="'+(String(row.band).toLowerCase() === current ? 'current' : '')+'"><td><strong>'+esc(row.band)+'</strong></td><td>'+esc(row.name)+'</td><td>'+esc(row.duplex)+'</td><td>'+esc(row.uplink)+'</td><td>'+esc(row.downlink)+'</td></tr>').join("") +
+    '</tbody></table></div>';
+}
+function currentDetail(rowName) {
+  const row = latestRows[rowName];
+  if (!row || !row.detail) return "";
+  const d = row.detail;
+  if (d.frequency_mhz != null) {
+    const dir = d.direction === "downlink" ? tr("downlinkWord") : tr("referenceWord");
+    return '<div class="current-ref"><strong>'+esc(tr("current"))+':</strong> ' +
+      (d.band ? esc(d.band)+' · ' : '') + esc(d.frequency_mhz) + ' MHz · ' + esc(dir) + '</div>';
+  }
+  if (d.band) {
+    return '<div class="current-ref"><strong>'+esc(tr("current"))+':</strong> '+esc(d.band)+' · '+esc(d.name)+' · '+esc(d.duplex)+' · '+esc(d.downlink)+' MHz</div>';
+  }
+  return "";
+}
+function signalSection(metric) {
+  const title = metric === "rsrp" ? tr("rsrpTitle") : tr("sinrTitle");
+  const copy = metric === "rsrp" ? tr("rsrpCopy") : tr("sinrCopy");
+  return '<section class="ref-section"><h3>'+esc(title)+'</h3><p class="ref-copy">'+esc(copy)+'</p>'+signalTable(metric)+'</section>';
+}
+function bandSection(kind, rowName) {
+  const title = kind === "lte" ? tr("lteBandsTitle") : tr("nrBandsTitle");
+  return '<section class="ref-section"><h3>'+esc(title)+'</h3><p class="ref-copy">'+esc(tr("bandCopy"))+'</p>'+currentDetail(rowName)+bandTable(kind)+'</section>';
+}
+function channelSection(kind, rowName) {
+  return '<section class="ref-section"><h3>'+(kind === "lte" ? 'LTE EARFCN' : '5G NR-ARFCN')+'</h3><p class="ref-copy">'+esc(tr("channelCopy"))+'</p>'+currentDetail(rowName)+bandTable(kind)+'</section>';
+}
+function openReference(key="overview", rowName="") {
+  let body = "";
+  if (key === "rsrp") body = signalSection("rsrp");
+  else if (key === "sinr") body = signalSection("sinr");
+  else if (key === "lte_band") body = bandSection("lte", rowName || "LTE Band");
+  else if (key === "nr_band") body = bandSection("nr", rowName || "5G Band");
+  else if (key === "lte_channel") body = channelSection("lte", rowName || "LTE EARFCN");
+  else if (key === "nr_channel") body = channelSection("nr", rowName || "5G NR-ARFCN");
+  else body = signalSection("rsrp") + signalSection("sinr") + bandSection("lte", "LTE Band") + bandSection("nr", "5G Band");
+  document.getElementById("refBody").innerHTML = body + '<p class="source-note">'+esc(tr("source"))+'</p>';
+  document.getElementById("refDialog").showModal();
+}
+document.getElementById("refButton").addEventListener("click", () => openReference());
+document.getElementById("closeRef").addEventListener("click", () => document.getElementById("refDialog").close());
+document.getElementById("refDialog").addEventListener("click", e => {
+  if (e.target === e.currentTarget) e.currentTarget.close();
+});
+document.getElementById("grid").addEventListener("click", e => {
+  const button = e.target.closest("[data-ref]");
+  if (button) openReference(button.dataset.ref, button.dataset.row);
+});
 async function refresh() {
   try {
     const r = await fetch("/api/status?lang=" + encodeURIComponent(currentLang), {cache:"no-store"});
@@ -801,12 +1086,17 @@ async function refresh() {
     document.getElementById("error").style.display = "none";
     document.getElementById("updated").textContent = "Updated " + data.timestamp + " · " + tr("refresh") + " " + (intervalMs/1000) + "s";
     const groups = {};
-    for (const row of data.rows) (groups[groupFor(row.name)] ||= []).push(row);
+    latestRows = {};
+    for (const row of data.rows) {
+      latestRows[row.name] = row;
+      (groups[groupFor(row.name)] ||= []).push(row);
+    }
     document.getElementById("grid").innerHTML = Object.entries(groups).map(([g, rows]) =>
       '<section class="card"><h2>'+esc(g)+'</h2>' + rows.map(row => {
         const cls = row.rating || "";
         const badge = row.rating_text ? '<span class="badge '+cls+'">'+esc(row.rating_text)+'</span>' : "";
-        return '<div class="metric"><div class="line"><span class="name">'+esc(row.name)+'</span><span><span class="value '+cls+'">'+esc(row.value)+'</span>'+badge+'</span></div>' +
+        const info = row.reference_key ? '<button type="button" class="info-button" data-ref="'+esc(row.reference_key)+'" data-row="'+esc(row.name)+'" aria-label="'+esc(tr("detailsFor")+' '+row.name)+'">i</button>' : "";
+        return '<div class="metric"><div class="line"><span class="name-wrap"><span class="name">'+esc(row.name)+'</span>'+info+'</span><span><span class="value '+cls+'">'+esc(row.value)+'</span>'+badge+'</span></div>' +
           (row.explanation ? '<div class="explanation">'+esc(row.explanation)+'</div>' : '') + '</div>';
       }).join("") + '</section>'
     ).join("");
@@ -829,6 +1119,7 @@ def serve_dashboard(client, port, interval, open_browser, language="en"):
         DASHBOARD_HTML
         .replace("__INTERVAL_MS__", str(interval * 1000))
         .replace("__LANG__", state["language"])
+        .replace("__REFERENCE_DATA__", json.dumps(REFERENCE_DATA, ensure_ascii=False))
     )
 
     class Handler(BaseHTTPRequestHandler):

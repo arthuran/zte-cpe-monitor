@@ -21,6 +21,41 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(zte.rating("lte_rsrp", "-75"), "excellent")
         self.assertEqual(zte.rating("lte_rsrp", "-95"), "fair")
         self.assertEqual(zte.rating("nr_sinr", "26.5"), "excellent")
+        self.assertEqual(zte.rating("nr_sinr", "20"), "good")
+        self.assertEqual(zte.rating("nr_sinr", "7"), "moderate")
+        self.assertEqual(zte.rating("nr_sinr", "2"), "poor")
+        self.assertEqual(zte.rating("nr_sinr", "-1"), "very_poor")
+
+    def test_channel_numbers_decode_to_reference_frequency(self):
+        lte = zte.lte_earfcn_info("1275")
+        self.assertEqual(lte["band"], "B3")
+        self.assertEqual(lte["frequency_mhz"], 1812.5)
+        self.assertEqual(zte.nr_arfcn_frequency_mhz("529950"), 2649.75)
+
+    def test_normalized_rows_include_reference_metadata(self):
+        rows = zte.normalize(
+            {
+                "wan_active_band": "LTE BAND 3",
+                "wan_active_channel": "1275",
+                "nr5g_action_band": "n41",
+                "nr5g_action_channel": "529950",
+                "lte_rsrp": "-85",
+                "lte_snr": "18",
+                "Z5g_rsrp": "-58",
+                "Z5g_SINR": "26.5",
+            },
+            "th",
+        )["rows"]
+        by_name = {row["name"]: row for row in rows}
+        self.assertEqual(by_name["LTE RSRP"]["reference_key"], "rsrp")
+        self.assertEqual(by_name["LTE EARFCN"]["detail"]["frequency_mhz"], 1812.5)
+        self.assertEqual(by_name["5G NR-ARFCN"]["detail"]["frequency_mhz"], 2649.75)
+        self.assertEqual(by_name["5G Band"]["detail"]["name"], "2500 MHz")
+
+    def test_dashboard_contains_reference_ui(self):
+        self.assertIn('id="refButton"', zte.DASHBOARD_HTML)
+        self.assertIn('__REFERENCE_DATA__', zte.DASHBOARD_HTML)
+        self.assertIn('id="refDialog"', zte.DASHBOARD_HTML)
 
     def test_english_is_default_language(self):
         rows = zte.normalize({"lte_rsrp": "-85"}, "en")["rows"]
